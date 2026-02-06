@@ -1,181 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Be My Valentine 💖</title>
-
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-  font-family: 'Segoe UI', sans-serif;
-}
-
-/* ---------- QUESTION SCREEN ---------- */
-#questionScreen {
-  position: fixed;
-  inset: 0;
-}
-
-#questionScreen img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-#darkOverlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-}
-
-#card {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 28px;
-  border-radius: 18px;
-  width: 320px;
-  text-align: center;
-}
-
-#card h1 {
-  color: #e63946;
-  margin-bottom: 18px;
-  font-size: 20px;
-}
-
-button {
-  padding: 12px 22px;
-  margin: 8px;
-  border: none;
-  border-radius: 24px;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-#yesBtn {
-  background: #e63946;
-  color: white;
-}
-
-#noBtn {
-  background: #adb5bd;
-  color: white;
-  position: relative;
-}
-
-/* ---------- AFTER YES ---------- */
-#afterYes {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: black;
-}
-
-#afterYes img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 1.2s ease;
-}
-
-#afterYes img.active {
-  opacity: 1;
-}
-
-#message {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 26px;
-  font-weight: bold;
-  text-align: center;
-  background: rgba(0,0,0,0.45);
-  padding: 20px 26px;
-  border-radius: 16px;
-}
-
-/* Hide YouTube player */
-iframe {
-  display: none;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Day Proposal</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #ff4081; }
+        button { background-color: #ff4081; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+        button:hover { background-color: #c6005b; }
+    </style>
 </head>
-
 <body>
-
-<!-- QUESTION -->
-<div id="questionScreen">
-  <img src="val-photo1.jpg" alt="Background photo">
-  <div id="darkOverlay"></div>
-
-  <div id="card">
-    <h1>Will you be my Valentine,<br>Shobhit Singh?</h1>
-    <button id="yesBtn" onclick="sayYes()">Yes ❤️</button>
-    <button id="noBtn" onmouseover="moveNo()">No 🙈</button>
-  </div>
+<div class="container">
+    <h1>Will You Be Mine?</h1>
+    <p>This Valentine's Day, I want to ask you a special question...</p>
+    <button onclick="showProposal()">Click to See</button>
+    <div id="proposal" style="display:none;">
+        <h2>My Proposal</h2>
+        <p>I want to spend the rest of my life with you. Will you marry me?</p>
+        <button onclick="acceptProposal()">Yes!</button>
+        <button onclick="declineProposal()">No!</button>
+    </div>
 </div>
-
-<!-- AFTER YES -->
-<div id="afterYes">
-  <img id="img2" class="active" src="val-photo2.jpg">
-  <img id="img3" src="val-photo3.jpg">
-
-  <div id="message">
-    🎉 Congratulations!<br>
-    Rakshita Singh is your Valentine 💖
-  </div>
-</div>
-
-<!-- MUSIC -->
-<iframe
-  id="music"
-  src="https://www.youtube.com/embed/2Vv-BfVoq4g?autoplay=1"
-  allow="autoplay">
-</iframe>
-
 <script>
-let photos = [];
-let index = 0;
-
-function sayYes() {
-  document.getElementById("questionScreen").style.display = "none";
-  document.getElementById("afterYes").style.display = "block";
-  document.getElementById("music").style.display = "block";
-
-  photos = [
-    document.getElementById("img2"),
-    document.getElementById("img3")
-  ];
-
-  setInterval(() => {
-    photos[index].classList.remove("active");
-    index = (index + 1) % photos.length;
-    photos[index].classList.add("active");
-  }, 5000);
-}
-
-function moveNo() {
-  const btn = document.getElementById("noBtn");
-  btn.style.transform =
-    `translate(${Math.random()*200-100}px, ${Math.random()*200-100}px)`;
-}
+    function showProposal() {
+        document.getElementById('proposal').style.display = 'block';
+    }
+    function acceptProposal() {
+        alert('Yay! I love you!');
+    }
+    function declineProposal() {
+        alert('That's okay, maybe next time!');
+    }
 </script>
-
 </body>
 </html>
