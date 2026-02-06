@@ -22,7 +22,7 @@
   /* ---------- background ---------- */
   body {
     background: #000;
-    overflow: hidden; /* hide extra scroll */
+    overflow: hidden;
   }
 
   #bg-img {
@@ -41,7 +41,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0,0,0,0.35); /* slightly dark overlay */
+    background: rgba(0,0,0,0.35);
     z-index: -2;
   }
 
@@ -49,7 +49,7 @@
   #dialog-wrapper {
     position: fixed;
     left: 50%;
-    top: 30%; /* lowered from earlier top: 22%; */
+    bottom: 10%; /* near bottom */
     transform: translateX(-50%);
     background: #fff;
     border-radius: 16px;
@@ -99,7 +99,7 @@
     display: none;
     position: fixed;
     left: 50%;
-    top: 34%; /* slightly lower than dialog, still upper half */
+    bottom: 12%; /* slightly above bottom */
     transform: translateX(-50%);
     background: #fff;
     border-radius: 16px;
@@ -117,29 +117,29 @@
     margin-bottom: 12px;
   }
 
-  /* ---------- extra pics section ---------- */
-  #extra-pics {
+  /* ---------- slideshow container ---------- */
+  #slideshow {
     display: none; /* show after clicking Yes */
     position: fixed;
     left: 50%;
-    top: 65%; /* lower area */
+    bottom: 40%; /* above message/dialog area */
     transform: translateX(-50%);
     width: 90%;
     max-width: 480px;
+    height: auto;
     z-index: 2;
     text-align: center;
   }
 
-  #extra-pics img {
-    width: 48%;
-    margin: 1%;
+  #slideshow img {
+    width: 100%;
     border-radius: 12px;
     object-fit: cover;
   }
 
   /* ---------- hidden YouTube player container ---------- */
   #yt-player {
-    display: none; /* hidden player, only audio */
+    display: none;
   }
 </style>
 </head>
@@ -165,13 +165,12 @@
     <p id="msg-text"></p>
   </div>
 
-  <!-- extra pics shown after yes -->
-  <div id="extra-pics">
-    <img src="val-photo2.jpg" alt="Pic 2" />
-    <img src="val-photo3.jpg" alt="Pic 3" />
+  <!-- slideshow container -->
+  <div id="slideshow">
+    <img id="slide-img" src="" alt="Slideshow Image" />
   </div>
 
-  <!-- hidden div where YouTube player will load -->
+  <!-- hidden div for YouTube player -->
   <div id="yt-player"></div>
 
 <script>
@@ -180,13 +179,14 @@
   const msgText = document.getElementById('msg-text');
   const yesBtn = document.getElementById('yes-btn');
   const noBtn = document.getElementById('no-btn');
-  const extraPics = document.getElementById('extra-pics');
+  const slideshow = document.getElementById('slideshow');
+  const slideImg = document.getElementById('slide-img');
 
-  // --------------- YouTube Player Setup ---------------
-  // Video ID for Ed Sheeran - Perfect
+  // ---------- YouTube Player Setup ----------
+  // Ed Sheeran - Perfect video ID
   const YT_VIDEO_ID = '2Vv-BfVoq4g';
 
-  let ytPlayer; // will hold the YouTube player object
+  let ytPlayer; // holds the player object
 
   // Load YouTube IFrame API script
   const tag = document.createElement('script');
@@ -205,7 +205,8 @@
         loop: 1,
         playlist: YT_VIDEO_ID,
         modestbranding: 1,
-        mute: 0
+        mute: 0,
+        start: 20 // start around 20 seconds into the track
       },
       events: {
         'onReady': onPlayerReady
@@ -214,37 +215,60 @@
   }
 
   function onPlayerReady(event) {
-    // Player ready, we'll call playVideo() on user click
+    // nothing needed here; play when user clicks
   }
 
-  function showMessage(text, showExtraPics) {
+  function showMessage(text) {
     dialog.style.display = 'none';
     msgText.textContent = text;
     message.style.display = 'block';
-
-    // if showExtraPics is true, show the two pictures
-    if (showExtraPics) {
-      extraPics.style.display = 'block';
-    }
   }
 
   function tryPlayYouTube() {
     if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
       ytPlayer.playVideo();
     } else {
-      console.warn('YT player not ready to play yet');
+      console.warn('YT player not ready yet');
     }
   }
 
+  // ---------- Slideshow ----------
+  const pics = ['val-photo2.jpg', 'val-photo3.jpg'];
+  let currentIndex = 0;
+  let slideInterval = null;
+
+  function startSlideshow() {
+    // show the container
+    slideshow.style.display = 'block';
+    // set first image
+    slideImg.src = pics[currentIndex];
+    // interval to change image every 3 seconds
+    slideInterval = setInterval(() => {
+      currentIndex = (currentIndex + 1) % pics.length;
+      slideImg.src = pics[currentIndex];
+    }, 3000);
+  }
+
+  function stopSlideshow() {
+    clearInterval(slideInterval);
+    slideInterval = null;
+  }
+
+  // ---------- Button actions ----------
   yesBtn.addEventListener('click', () => {
-    // New message requested by you
-    showMessage('Congratulations! You are valentine of Rakshita Singh', true);
+    // Correct message requested
+    showMessage('Congratulations! You are valentine of Rakshita Singh');
+    // start slideshow of pics 2 & 3
+    startSlideshow();
+    // start music
     tryPlayYouTube();
   });
 
   noBtn.addEventListener('click', () => {
-    // Optionally show no message without pics
-    showMessage('Oh… 😔 Maybe next time.', false);
+    showMessage('Oh… 😔 Maybe next time.');
+    // optionally stop slideshow if running
+    stopSlideshow();
+    // still try play music if desired
     tryPlayYouTube();
   });
 
