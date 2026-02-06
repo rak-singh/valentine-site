@@ -2,179 +2,221 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Be My Valentine 💖</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Be My Valentine 💘</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+  /* ---------- reset ---------- */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  font-family: 'Segoe UI', sans-serif;
-}
+  html, body {
+    width: 100%;
+    height: 100%;
+    font-family: 'Segoe UI', sans-serif;
+  }
 
-/* ---------- QUESTION SCREEN ---------- */
-#questionScreen {
-  position: fixed;
-  inset: 0;
-}
+  /* ---------- background ---------- */
+  body {
+    background: #000;
+    overflow: hidden;
+  }
 
-#questionScreen img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+  #bg-img {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -2;
+  }
 
-#darkOverlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-}
+  #overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.4);
+    z-index: -1;
+  }
 
-#card {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 28px;
-  border-radius: 18px;
-  width: 320px;
-  text-align: center;
-}
+  /* ---------- dialog popup ---------- */
+  #dialog-wrapper {
+    position: fixed;
+    left: 50%;
+    top: 22%; /* higher than center; top third */
+    transform: translateX(-50%);
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    width: 90%;
+    max-width: 380px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    text-align: center;
+    z-index: 2;
+  }
 
-#card h1 {
-  color: #e63946;
-  margin-bottom: 18px;
-  font-size: 20px;
-}
+  #dialog-wrapper h1 {
+    font-size: 1.35rem;
+    line-height: 1.3;
+    color: #c00;
+    margin-bottom: 18px;
+  }
 
-button {
-  padding: 12px 22px;
-  margin: 8px;
-  border: none;
-  border-radius: 24px;
-  font-size: 15px;
-  cursor: pointer;
-}
+  .btn-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
 
-#yesBtn {
-  background: #e63946;
-  color: white;
-}
+  .btn {
+    flex: 1;
+    padding: 12px 0;
+    border: none;
+    border-radius: 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
 
-#noBtn {
-  background: #adb5bd;
-  color: white;
-  position: relative;
-}
+  #yes-btn {
+    background: #e53935;
+    color: #fff;
+  }
 
-/* ---------- AFTER YES ---------- */
-#afterYes {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: black;
-}
+  #no-btn {
+    background: #e0e0e0;
+    color: #444;
+  }
 
-#afterYes img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 1.2s ease;
-}
+  /* ---------- after response message ---------- */
+  #message-wrapper {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 26%; /* still top third */
+    transform: translateX(-50%);
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    width: 90%;
+    max-width: 380px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    text-align: center;
+    z-index: 2;
+  }
 
-#afterYes img.active {
-  opacity: 1;
-}
+  #message-wrapper p {
+    font-size: 1.25rem;
+    color: #333;
+    margin-bottom: 12px;
+  }
 
-#message {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 26px;
-  font-weight: bold;
-  text-align: center;
-  background: rgba(0,0,0,0.45);
-  padding: 20px 26px;
-  border-radius: 16px;
-}
-
-/* Hide YouTube player */
-iframe {
-  display: none;
-}
+  /* ---------- hidden YouTube player container ---------- */
+  #yt-player {
+    display: none; /* keep it hidden; we just need it to play audio */
+  }
 </style>
 </head>
-
 <body>
 
-<!-- QUESTION -->
-<div id="questionScreen">
-  <img src="val-photo1.jpg" alt="Background photo">
-  <div id="darkOverlay"></div>
+  <!-- background image -->
+  <img id="bg-img" src="val-photo1.jpg" alt="Background" />
 
-  <div id="card">
-    <h1>Will you be my Valentine,<br>Shobhit Singh?</h1>
-    <button id="yesBtn" onclick="sayYes()">Yes ❤️</button>
-    <button id="noBtn" onmouseover="moveNo()">No 🙈</button>
+  <!-- dark overlay -->
+  <div id="overlay"></div>
+
+  <!-- dialog -->
+  <div id="dialog-wrapper">
+    <h1>Will you be my Valentine, Shobhít Singh?</h1>
+    <div class="btn-group">
+      <button id="yes-btn" class="btn">Yes ❤️</button>
+      <button id="no-btn" class="btn">No 🙈</button>
+    </div>
   </div>
-</div>
 
-<!-- AFTER YES -->
-<div id="afterYes">
-  <img id="img2" class="active" src="val-photo2.jpg">
-  <img id="img3" src="val-photo3.jpg">
-
-  <div id="message">
-    🎉 Congratulations!<br>
-    Rakshita Singh is your Valentine 💖
+  <!-- message shown after clicking -->
+  <div id="message-wrapper">
+    <p id="msg-text"></p>
   </div>
-</div>
 
-<!-- MUSIC -->
-<iframe
-  id="music"
-  src="https://www.youtube.com/embed/2Vv-BfVoq4g?autoplay=1"
-  allow="autoplay">
-</iframe>
+  <!-- hidden div where YouTube player will go -->
+  <div id="yt-player"></div>
 
 <script>
-let photos = [];
-let index = 0;
+  const dialog = document.getElementById('dialog-wrapper');
+  const message = document.getElementById('message-wrapper');
+  const msgText = document.getElementById('msg-text');
+  const yesBtn = document.getElementById('yes-btn');
+  const noBtn = document.getElementById('no-btn');
 
-function sayYes() {
-  document.getElementById("questionScreen").style.display = "none";
-  document.getElementById("afterYes").style.display = "block";
-  document.getElementById("music").style.display = "block";
+  // --------------- YouTube Player Setup ---------------
+  // Replace '2Vv-BfVoq4g' with the ID of the Ed Sheeran video you want.
+  const YT_VIDEO_ID = '2Vv-BfVoq4g'; // Ed Sheeran - Perfect
 
-  photos = [
-    document.getElementById("img2"),
-    document.getElementById("img3")
-  ];
+  let ytPlayer; // will hold the player instance
 
-  setInterval(() => {
-    photos[index].classList.remove("active");
-    index = (index + 1) % photos.length;
-    photos[index].classList.add("active");
-  }, 5000);
-}
+  // Load YouTube IFrame API script
+  const tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
 
-function moveNo() {
-  const btn = document.getElementById("noBtn");
-  btn.style.transform =
-    `translate(${Math.random()*200-100}px, ${Math.random()*200-100}px)`;
-}
+  // This function is called by the YouTube API when it's ready
+  function onYouTubeIframeAPIReady() {
+    ytPlayer = new YT.Player('yt-player', {
+      height: '0',   // hidden player
+      width: '0',    // hidden player
+      videoId: YT_VIDEO_ID,
+      playerVars: {
+        autoplay: 0,       // do not autoplay on load
+        controls: 0,       // hide controls
+        loop: 1,           // loop playback
+        playlist: YT_VIDEO_ID, // required for loop
+        modestbranding: 1, // minimal YouTube branding
+        mute: 0            // start unmuted (but playback is triggered by user)
+      },
+      events: {
+        'onReady': onPlayerReady
+      }
+    });
+  }
+
+  function onPlayerReady(event) {
+    // Player is ready. We'll call play on user interaction only.
+  }
+
+  function showMessage(text) {
+    dialog.style.display = 'none';
+    msgText.textContent = text;
+    message.style.display = 'block';
+  }
+
+  function tryPlayYouTube() {
+    if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+      ytPlayer.playVideo();
+    } else {
+      // If player not ready yet, do nothing or log
+      console.warn('YT player not ready to play yet');
+    }
+  }
+
+  yesBtn.addEventListener('click', () => {
+    showMessage('Yay! ❤️ I’m so happy you said Yes!');
+    tryPlayYouTube();
+  });
+
+  noBtn.addEventListener('click', () => {
+    showMessage('Oh… 😔 Maybe next time.');
+    tryPlayYouTube();
+  });
+
+  // Expose onYouTubeIframeAPIReady to global scope (required by API)
+  window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
 </script>
 
 </body>
