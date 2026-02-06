@@ -22,7 +22,7 @@
   /* ---------- background ---------- */
   body {
     background: #000;
-    overflow: hidden;
+    overflow: hidden; /* hide extra scroll */
   }
 
   #bg-img {
@@ -32,7 +32,7 @@
     width: 100vw;
     height: 100vh;
     object-fit: cover;
-    z-index: -2;
+    z-index: -3;
   }
 
   #overlay {
@@ -41,15 +41,15 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0,0,0,0.4);
-    z-index: -1;
+    background: rgba(0,0,0,0.35); /* slightly dark overlay */
+    z-index: -2;
   }
 
   /* ---------- dialog popup ---------- */
   #dialog-wrapper {
     position: fixed;
     left: 50%;
-    top: 22%; /* higher than center; top third */
+    top: 30%; /* lowered from earlier top: 22%; */
     transform: translateX(-50%);
     background: #fff;
     border-radius: 16px;
@@ -99,7 +99,7 @@
     display: none;
     position: fixed;
     left: 50%;
-    top: 26%; /* still top third */
+    top: 34%; /* slightly lower than dialog, still upper half */
     transform: translateX(-50%);
     background: #fff;
     border-radius: 16px;
@@ -117,9 +117,29 @@
     margin-bottom: 12px;
   }
 
+  /* ---------- extra pics section ---------- */
+  #extra-pics {
+    display: none; /* show after clicking Yes */
+    position: fixed;
+    left: 50%;
+    top: 65%; /* lower area */
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 480px;
+    z-index: 2;
+    text-align: center;
+  }
+
+  #extra-pics img {
+    width: 48%;
+    margin: 1%;
+    border-radius: 12px;
+    object-fit: cover;
+  }
+
   /* ---------- hidden YouTube player container ---------- */
   #yt-player {
-    display: none; /* keep it hidden; we just need it to play audio */
+    display: none; /* hidden player, only audio */
   }
 </style>
 </head>
@@ -145,7 +165,13 @@
     <p id="msg-text"></p>
   </div>
 
-  <!-- hidden div where YouTube player will go -->
+  <!-- extra pics shown after yes -->
+  <div id="extra-pics">
+    <img src="val-photo2.jpg" alt="Pic 2" />
+    <img src="val-photo3.jpg" alt="Pic 3" />
+  </div>
+
+  <!-- hidden div where YouTube player will load -->
   <div id="yt-player"></div>
 
 <script>
@@ -154,31 +180,32 @@
   const msgText = document.getElementById('msg-text');
   const yesBtn = document.getElementById('yes-btn');
   const noBtn = document.getElementById('no-btn');
+  const extraPics = document.getElementById('extra-pics');
 
   // --------------- YouTube Player Setup ---------------
-  // Replace '2Vv-BfVoq4g' with the ID of the Ed Sheeran video you want.
-  const YT_VIDEO_ID = '2Vv-BfVoq4g'; // Ed Sheeran - Perfect
+  // Video ID for Ed Sheeran - Perfect
+  const YT_VIDEO_ID = '2Vv-BfVoq4g';
 
-  let ytPlayer; // will hold the player instance
+  let ytPlayer; // will hold the YouTube player object
 
   // Load YouTube IFrame API script
   const tag = document.createElement('script');
   tag.src = "https://www.youtube.com/iframe_api";
   document.head.appendChild(tag);
 
-  // This function is called by the YouTube API when it's ready
+  // Called by YouTube API when ready
   function onYouTubeIframeAPIReady() {
     ytPlayer = new YT.Player('yt-player', {
-      height: '0',   // hidden player
-      width: '0',    // hidden player
+      height: '0',
+      width: '0',
       videoId: YT_VIDEO_ID,
       playerVars: {
-        autoplay: 0,       // do not autoplay on load
-        controls: 0,       // hide controls
-        loop: 1,           // loop playback
-        playlist: YT_VIDEO_ID, // required for loop
-        modestbranding: 1, // minimal YouTube branding
-        mute: 0            // start unmuted (but playback is triggered by user)
+        autoplay: 0,
+        controls: 0,
+        loop: 1,
+        playlist: YT_VIDEO_ID,
+        modestbranding: 1,
+        mute: 0
       },
       events: {
         'onReady': onPlayerReady
@@ -187,35 +214,41 @@
   }
 
   function onPlayerReady(event) {
-    // Player is ready. We'll call play on user interaction only.
+    // Player ready, we'll call playVideo() on user click
   }
 
-  function showMessage(text) {
+  function showMessage(text, showExtraPics) {
     dialog.style.display = 'none';
     msgText.textContent = text;
     message.style.display = 'block';
+
+    // if showExtraPics is true, show the two pictures
+    if (showExtraPics) {
+      extraPics.style.display = 'block';
+    }
   }
 
   function tryPlayYouTube() {
     if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
       ytPlayer.playVideo();
     } else {
-      // If player not ready yet, do nothing or log
       console.warn('YT player not ready to play yet');
     }
   }
 
   yesBtn.addEventListener('click', () => {
-    showMessage('Yay! ❤️ I’m so happy you said Yes!');
+    // New message requested by you
+    showMessage('Congratulations! You are valentine of Rakshita Singh', true);
     tryPlayYouTube();
   });
 
   noBtn.addEventListener('click', () => {
-    showMessage('Oh… 😔 Maybe next time.');
+    // Optionally show no message without pics
+    showMessage('Oh… 😔 Maybe next time.', false);
     tryPlayYouTube();
   });
 
-  // Expose onYouTubeIframeAPIReady to global scope (required by API)
+  // Expose the API callback
   window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
 </script>
 
